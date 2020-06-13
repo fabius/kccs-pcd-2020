@@ -14,7 +14,9 @@ except KeyError as key:
 
 app = Flask(__name__)
 
-
+# provide 2 endpoints:
+# 1 - check for intersections and return them
+# 2 - register combinations
 @app.route("/compare/", methods=["GET", "POST"])
 def compare():
     dbcon = pg.connect(
@@ -50,7 +52,7 @@ def compare():
                 SELECT hash 
                 FROM hashes 
                 WHERE hash = ANY(%s);
-            """, (data,))
+                """, (data,))
             intersection = [current[0] for current in cursor.fetchall()]
         except pg.errors.InvalidTextRepresentation:
             intersection = []
