@@ -37,7 +37,7 @@ def compare():
             try:
                 cursor.execute("""
                     INSERT INTO hashes (hash)
-                    VALUES (%s);
+                    VALUES (DECODE(%s, 'hex'));
                     """, [data])
             except pg.errors.UniqueViolation:
                 app.logger.debug(f"Hash {data} already exists")
@@ -49,9 +49,9 @@ def compare():
     elif request.method == "GET":
         try:
             cursor.execute("""
-                SELECT hash 
+                SELECT ENCODE(hash::BYTEA, 'hex') 
                 FROM hashes 
-                WHERE hash = ANY(%s);
+                WHERE ENCODE(hash::BYTEA, 'hex') = ANY(%s);
                 """, (data,))
             intersection = [current[0] for current in cursor.fetchall()]
         except pg.errors.InvalidTextRepresentation:
