@@ -1,0 +1,9 @@
+FROM ubuntu:focal
+ENV LANG C.UTF-8
+ENV PYTHONUNBUFFERED 1
+RUN apt-get update --fix-missing
+RUN apt-get install -y python3 pipenv
+WORKDIR /app
+COPY src/server/main.py src/server/Pipfile src/server/Pipfile.lock /app/
+RUN pipenv install
+ENTRYPOINT pipenv run python3 main.py
