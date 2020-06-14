@@ -2,24 +2,24 @@ import requests, json, hashlib, os
 import psycopg2 as pg
 
 try:
-    BASE_URL         = os.environ["PCD_IP"]
-    MY_PHONE_NUMBER  = os.environ["MY_PHONE_NUMBER"]
-    HASH_DB_HOST     = os.environ["HASH_DB_HOST"]
-    HASH_DB_PORT     = os.environ["HASH_DB_PORT"]
-    HASH_DB_NAME     = os.environ["HASH_DB_NAME"]
-    HASH_DB_USERNAME = os.environ["HASH_DB_USERNAME"]
-    HASH_DB_PASSWORD = os.environ["HASH_DB_PASSWORD"]
+    BASE_URL             = os.environ["PCD_IP"]
+    MY_PHONE_NUMBER      = os.environ["MY_PHONE_NUMBER"]
+    CONTACTS_DB_HOST     = os.environ["CONTACTS_DB_HOST"]
+    CONTACTS_DB_PORT     = os.environ["CONTACTS_DB_PORT"]
+    CONTACTS_DB_NAME     = os.environ["CONTACTS_DB_NAME"]
+    CONTACTS_DB_USERNAME = os.environ["CONTACTS_DB_USERNAME"]
+    CONTACTS_DB_PASSWORD = os.environ["CONTACTS_DB_PASSWORD"]
 except KeyError as key:
     print(f"Database connection cannot be established. {key} is unset! Please export it")
     exit(1)
 
 # construct a (fictitious) address book using a database for its phone numbers
 dbcon = pg.connect(
-    host     = HASH_DB_HOST,
-    port     = HASH_DB_PORT,
-    dbname   = HASH_DB_NAME,
-    user     = HASH_DB_USERNAME,
-    password = HASH_DB_PASSWORD)
+    host     = CONTACTS_DB_HOST,
+    port     = CONTACTS_DB_PORT,
+    dbname   = CONTACTS_DB_NAME,
+    user     = CONTACTS_DB_USERNAME,
+    password = CONTACTS_DB_PASSWORD)
 cursor = dbcon.cursor()
 cursor.execute("""
     SELECT number 
@@ -50,7 +50,7 @@ friends_combinations_array = [hash_val for hash_val in friends_combinations_dict
 if __name__ == "__main__":
     # check for intersections
     # returns already registered hashes
-    resp = requests.get(f"{BASE_URL}/compare/", data=json.dumps(friends_combinations_array)).json()
+    resp = requests.get(f"http://{BASE_URL}/compare/", data=json.dumps(friends_combinations_array)).json()
     
     result_numbers = [
         friends_combinations_dict[hash_val].replace(MY_PHONE_NUMBER, "") 
