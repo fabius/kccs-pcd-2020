@@ -62,7 +62,7 @@ def compare():
         dbcon.close()
         app.logger.debug(f"intersection: {intersection}")
         status_code = 200 if len(intersection) != 0 else 404
-        print(status_code)
+        app.logger.debug(status_code)
         return json.dumps(intersection)
     
 

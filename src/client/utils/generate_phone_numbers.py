@@ -42,7 +42,7 @@ if __name__ == "__main__":
     try:
         cursor.execute("""
             INSERT INTO contacts (number)
-            VALUES (unnest(%s));
+            VALUES (UNNEST(%s));
             """, (numbers_to_insert,))
     except pg.errors.UniqueViolation:
         app.logger.debug(f"A duplication hindered the insertion. Please make sure your database table is empty")
