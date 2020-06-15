@@ -50,7 +50,7 @@ Export all required environment variables
 
 | Variable | Description |
 | -------: | :---------- |
-| PCD_IP | \<IP address\>:\<port\> the pcd server is exposed / accessible on. For local deployment you can use your docker network address - `ip a | grep docker0 | grep inet` should get you the correct IP address |
+| PCD_IP | \<IP address\>:\<port\> the pcd server is exposed / accessible on. For local deployment you can use your docker network address - `ip a \| grep docker0 \| grep inet` should get you the correct IP address |
 | MY_PHONE_NUMBER | Your phone number |
 | CONTACTS_DB_HOST | IP address of your database containing the [contacts table](db_structure.sql) |
 | CONTACTS_DB_PORT | Port the database is exposed / accessible on |
