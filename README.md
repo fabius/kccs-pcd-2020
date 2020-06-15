@@ -79,3 +79,16 @@ pipenv run python3 main.py
 ```
 
 
+
+## Building the images
+
+### Server image
+```bash
+docker build -t pcd-server:local -f Dockerfile.Server .
+```
+
+### Client image
+```bash
+docker build -t pcd-client:local -f Dockerfile.Client .
+```
+
