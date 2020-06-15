@@ -123,3 +123,18 @@ SHA1 is being used. MD5 would have been fine as well.
     user    0m0,811s
     sys     0m0,074s    
     ```
+
+
+
+## Q: How long does it take to compute a specific pre-image for a desired hash?
+The calculation is analogue to [this article](https://thycotic.force.com/support/s/article/Calculating-Password-Complexity)
+
+On a modern computer (6 core, 2.8 GHz), it takes 0.00063 milliseconds to compute a SHA1 hash (= 6.3e-7 seconds).
+
+This translates to 1.5e+6 hashes per second.
+
+Assuming the desired preimage is achieved after half of the possible combinations (preimage complexity of 10e+20 without salt), it would take approximately 1.000.000 years to get the desired hash.
+
+Calculation: (6.3*10^-7 * 10^20) / (60*60*24*7*52*2)
+
+A comparable VM rental on MS Azure would cost about 2.000.000.000 $ 
