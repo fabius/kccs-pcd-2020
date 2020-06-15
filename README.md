@@ -92,3 +92,10 @@ docker build -t pcd-server:local -f Dockerfile.Server .
 docker build -t pcd-client:local -f Dockerfile.Client .
 ```
 
+
+
+## TODO 
+* how can 2 parties start interacting with each other?
+* salt private information 
+
+
