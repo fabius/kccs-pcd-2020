@@ -31,14 +31,16 @@ def compare():
     app.logger.debug(f"request data: {data}")
 
     if request.method == "POST":
-        if type(data) != str:
-            return "provide a single hash"
+        if type(data) != list:
+            return "provide an array of hashes"
         else:
             try:
                 cursor.execute("""
                     INSERT INTO hashes (hash)
-                    VALUES (DECODE(%s, 'hex'));
-                    """, [data])
+                    VALUES (DECODE(UNNEST(%s), 'hex'))
+                    ON CONFLICT (hash)
+                    DO UPDATE SET hash = EXCLUDED.hash;
+                    """, (data,))
             except pg.errors.UniqueViolation:
                 app.logger.debug(f"Hash {data} already exists")
             dbcon.commit()

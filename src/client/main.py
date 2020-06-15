@@ -60,6 +60,4 @@ if __name__ == "__main__":
     print(result_numbers)
 
     # register my hash combinations
-    for element in my_combinations_array:
-        requests.post(f"{BASE_URL}/compare/", data=json.dumps(element))
-        
+    resp = requests.post(f"http://{BASE_URL}/compare/", data=json.dumps(my_combinations_array))
