@@ -28,7 +28,7 @@ if __name__ == "__main__":
         SELECT number, last_interaction_utc 
         FROM contacts;
         """)
-    address_book = [contact for contact in cursor.fetchall()]
+    address_book = [(str(contact[0]), str(contact[1])) for contact in cursor.fetchall()]
     dbcon.close()
     cursor.close()
 
@@ -41,9 +41,7 @@ if __name__ == "__main__":
     # -> check for intersections using the second dict (each friends perspective)
     my_combinations_dict      = {}
     friends_combinations_dict = {}
-    for contact in address_book:
-        contact_number           = str(contact[0])
-        contact_last_interaction = str(contact[1])
+    for contact_number, contact_last_interaction in address_book:
         my_combination           = MY_PHONE_NUMBER + contact_number  + ':' + contact_last_interaction
         friend_combination       = contact_number  + MY_PHONE_NUMBER + ':' + contact_last_interaction
         my_combinations_dict     [hashlib.sha1(my_combination    .encode()).hexdigest()] = my_combination
