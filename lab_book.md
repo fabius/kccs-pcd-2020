@@ -135,6 +135,6 @@ This translates to 1.5e+6 hashes per second.
 
 Assuming the desired preimage is achieved after half of the possible combinations (preimage complexity of 10e+20 without salt), it would take approximately 1.000.000 years to get the desired hash.
 
-Calculation: (6.3*10^-7 * 10^20) / (60*60*24*7*52*2)
+Calculation: (6.3\*10^-7 \* 10^20) / (60\*60\*24\*7\*52\*2)
 
 A comparable VM rental on MS Azure would cost about 2.000.000.000 $ 
