@@ -72,7 +72,7 @@ SHA1 is being used. MD5 would have been fine as well.
     ```
 
     ```bash
-    kccs-pcd-2020/src/client$ pipenv run python3 utils/generate_phone_numbers.py 1000
+    kccs-pcd-2020/src/client$ pipenv run python3 utils/generate_contacts.py 1000
     ```
 
     ```bash
