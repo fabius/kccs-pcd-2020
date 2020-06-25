@@ -2,8 +2,10 @@ FROM ubuntu:focal
 ENV LANG C.UTF-8
 ENV PYTHONUNBUFFERED 1
 RUN apt-get update --fix-missing
-RUN apt-get install -y python3 pipenv
+RUN apt-get install -y python3 python3-pip
+RUN pip3 install pipenv --upgrade
 WORKDIR /app
 COPY src/server/main.py src/server/Pipfile src/server/Pipfile.lock /app/
 RUN pipenv install
+RUN pipenv check
 ENTRYPOINT pipenv run python3 main.py
