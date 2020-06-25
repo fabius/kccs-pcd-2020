@@ -2,16 +2,7 @@ import random, sys, os, logging, datetime
 import psycopg2 as pg
 
 logging.basicConfig(level=logging.DEBUG)
-
-try:
-    HASH_DB_HOST = os.environ["HASH_DB_HOST"]
-    HASH_DB_PORT = os.environ["HASH_DB_PORT"]
-    HASH_DB_NAME = os.environ["HASH_DB_NAME"]
-    HASH_DB_USERNAME = os.environ["HASH_DB_USERNAME"]
-    HASH_DB_PASSWORD = os.environ["HASH_DB_PASSWORD"]
-except KeyError as ke:
-    print(f"Database connection cannot be established. {ke} is unset! Please export it")
-    exit(1)
+amount_to_generate = sys.argv[1]
 
 
 
@@ -22,24 +13,34 @@ def generate_unique_number(numbers: list) -> int:
         num = generate_unique_number(numbers)
     return num
 
-def unique_numbers_array(numbers=[]) -> list:
-    for i in range(int(sys.argv[1])):
+def unique_numbers_array(numbers=[], amount=amount_to_generate) -> list:
+    for i in range(int(amount)):
         num = generate_unique_number(numbers)
         numbers.append(num)
-        logging.debug(f"number {str(i).zfill(len(str(sys.argv[1])))}: {num}")
+        logging.debug(f"number {str(i).zfill(len(str(amount)))}: {num}")
     return numbers
 
-def dates_array(dates=[]) -> list:
+def dates_array(dates=[], amount=amount_to_generate) -> list:
     now = datetime.datetime.utcnow().replace(microsecond=0, second=0)
-    for i in range(int(sys.argv[1])):
+    for i in range(int(amount)):
         date_to_append = now + datetime.timedelta(minutes=i)
         dates.append(date_to_append)
-        logging.debug(f"date {str(i).zfill(len(str(sys.argv[1])))}: {date_to_append}")
+        logging.debug(f"date {str(i).zfill(len(str(amount)))}: {date_to_append}")
     return dates
 
 
 
 if __name__ == "__main__":
+    try:
+        HASH_DB_HOST = os.environ["HASH_DB_HOST"]
+        HASH_DB_PORT = os.environ["HASH_DB_PORT"]
+        HASH_DB_NAME = os.environ["HASH_DB_NAME"]
+        HASH_DB_USERNAME = os.environ["HASH_DB_USERNAME"]
+        HASH_DB_PASSWORD = os.environ["HASH_DB_PASSWORD"]
+    except KeyError as ke:
+        print(f"Database connection cannot be established. {ke} is unset! Please export it")
+        exit(1)
+
     contact_numbers = unique_numbers_array()
     contact_interaction_dates = dates_array()
     
@@ -55,7 +56,7 @@ if __name__ == "__main__":
             INSERT INTO contacts (number, last_interaction_utc)
             VALUES (UNNEST(%s),UNNEST(%s));
             """, (contact_numbers, contact_interaction_dates))
-        logging.debug(f"inserted {sys.argv[1]} unique contacts")
+        logging.debug(f"inserted {amount_to_generate} unique contacts")
     except pg.errors.UniqueViolation:
         app.logger.debug(f"A duplicate number hindered the insertion. Please make sure your database table is empty")
     dbcon.commit()
