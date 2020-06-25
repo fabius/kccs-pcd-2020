@@ -22,24 +22,27 @@ dbcon = pg.connect(
     password = CONTACTS_DB_PASSWORD)
 cursor = dbcon.cursor()
 cursor.execute("""
-    SELECT number 
+    SELECT number, last_interaction_utc 
     FROM contacts;
     """)
-address_book = [str(nums[0]) for nums in cursor.fetchall()]
+address_book = [contact for contact in cursor.fetchall()]
 dbcon.close()
 cursor.close()
 
 # construct 2 dictionaries of number combinations:
-# 1 - MY_NUMBER followed by A_FRIENDS_NUMBER
-# 2 - A_FRIENDS_NUMBER followed by MY_NUMBER
+# NOTE THAT LAST_INTERACTION IS JUST AN EXAMPLE OF ANY PRIVATELY DISCLOSED INFORMATION
+# 1 - MY_NUMBER followed by A_FRIENDS_NUMBER : "last_interaction"
+# 2 - A_FRIENDS_NUMBER followed by MY_NUMBER : "last_interaction"
 # this is done so that we don't get any false positivies when receiving the intersection
 # -> upload the first dict (my perspective)
 # -> check for intersections using the second dict (each friends perspective)
 my_combinations_dict      = {}
 friends_combinations_dict = {}
 for contact in address_book:
-    my_combination     = MY_PHONE_NUMBER + contact
-    friend_combination = contact         + MY_PHONE_NUMBER
+    contact_number           = str(contact[0])
+    contact_last_interaction = str(contact[1])
+    my_combination           = MY_PHONE_NUMBER + contact_number  + ':' + contact_last_interaction
+    friend_combination       = contact_number  + MY_PHONE_NUMBER + ':' + contact_last_interaction
     my_combinations_dict     [hashlib.sha1(my_combination    .encode()).hexdigest()] = my_combination
     friends_combinations_dict[hashlib.sha1(friend_combination.encode()).hexdigest()] = friend_combination
 my_combinations_array      = [hash_val for hash_val in my_combinations_dict]
@@ -49,15 +52,18 @@ friends_combinations_array = [hash_val for hash_val in friends_combinations_dict
 
 if __name__ == "__main__":
     # check for intersections
-    # returns already registered hashes
+    # returns an array of already registered hashes
     resp = requests.get(f"http://{BASE_URL}/compare/", data=json.dumps(friends_combinations_array)).json()
     
+    # the intersection (value for each corresponding key inside the dict) looks like:
+    # ["FRIENDS_NUMBER""MY_NUMBER":"last_interaction"]
+    # however we are only interested in the other parties' phone numbers
     result_numbers = [
-        friends_combinations_dict[hash_val].replace(MY_PHONE_NUMBER, "") 
+        friends_combinations_dict[hash_val].replace(MY_PHONE_NUMBER, "").split(':')[0] 
         for hash_val in resp]
     # remove potential duplicates
     result_numbers = list(dict.fromkeys(result_numbers))
-    print(result_numbers)
+    print(f"intersection / registered friends: {result_numbers}")
 
     # register my hash combinations
     resp = requests.post(f"http://{BASE_URL}/compare/", data=json.dumps(my_combinations_array))
