@@ -98,7 +98,7 @@ SHA1 is being used. MD5 would have been fine as well.
     sys     0m0,058s
     ```
 
-    However when passing through an array of hashes rather than doing a POST request for every single hash, the time of execution is improved dramatically:
+    However when passing through an array of hashes rather than doing a POST request for every single hash ([commit](https://github.com/fabiandeifuss/kccs-pcd-2020/commit/c228c34588fa89f699fa6d0ac8580d3a7c38d052)), the time of execution is improved dramatically:
 
     result:
 
