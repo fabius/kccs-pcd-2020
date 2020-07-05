@@ -4,11 +4,13 @@ import psycopg2 as pg
 try:
     BASE_URL             = os.environ["PCD_IP"]
     MY_PHONE_NUMBER      = os.environ["MY_PHONE_NUMBER"]
-    CONTACTS_DB_HOST     = os.environ["CONTACTS_DB_HOST"]
-    CONTACTS_DB_PORT     = os.environ["CONTACTS_DB_PORT"]
-    CONTACTS_DB_NAME     = os.environ["CONTACTS_DB_NAME"]
-    CONTACTS_DB_USERNAME = os.environ["CONTACTS_DB_USERNAME"]
-    CONTACTS_DB_PASSWORD = os.environ["CONTACTS_DB_PASSWORD"]
+    db_cred = {
+        "host"     : os.environ["CONTACTS_DB_HOST"],
+        "port"     : os.environ["CONTACTS_DB_PORT"],
+        "name"     : os.environ["CONTACTS_DB_NAME"],
+        "username" : os.environ["CONTACTS_DB_USERNAME"],
+        "password" : os.environ["CONTACTS_DB_PASSWORD"]
+    }
 except KeyError as key:
     print(f"Database connection cannot be established. {key} is unset! Please export it")
     exit(1)
@@ -18,11 +20,11 @@ except KeyError as key:
 if __name__ == "__main__":
     # construct a (fictitious) address book using a database for its phone numbers
     dbcon = pg.connect(
-        host     = CONTACTS_DB_HOST,
-        port     = CONTACTS_DB_PORT,
-        dbname   = CONTACTS_DB_NAME,
-        user     = CONTACTS_DB_USERNAME,
-        password = CONTACTS_DB_PASSWORD)
+        host     = db_cred["host"],
+        port     = db_cred["port"],
+        dbname   = db_cred["name"],
+        user     = db_cred["username"],
+        password = db_cred["password"])
     cursor = dbcon.cursor()
     cursor.execute("""
         SELECT number, last_interaction_utc 
