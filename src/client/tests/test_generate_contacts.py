@@ -20,5 +20,5 @@ class TestGenerateContacts(unittest.TestCase):
         self.assertEqual(type(dates), list)
         self.assertEqual(length, 1000)
         for date in dates:
-            self.assertEqual(dates.count(date), 1)
+            self.assertEqual(dates.count(date), length)
             self.assertEqual(type(date), datetime.datetime)

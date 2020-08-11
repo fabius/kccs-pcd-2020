@@ -9,9 +9,9 @@ COPY src/server/main.py src/server/Pipfile src/server/Pipfile.lock /app/
 FROM base
 RUN pipenv install --dev
 RUN pipenv check
-RUN pipenv run bandit main.py
+# skip debug=True for flask app - this is a PoC
+RUN pipenv run bandit main.py --skip B201
 
 FROM base
 RUN pipenv install
-RUN pipenv check
 ENTRYPOINT pipenv run python3 main.py
