@@ -1,5 +1,7 @@
-import requests, json, hashlib, os
+import requests, json, hashlib, os, secrets, logging, traceback
 import psycopg2 as pg
+
+logging.basicConfig(level=logging.DEBUG)
 
 try:
     BASE_URL             = os.environ["PCD_IP"]
@@ -12,7 +14,7 @@ try:
         "password" : os.environ["CONTACTS_DB_PASSWORD"]
     }
 except KeyError as key:
-    print(f"Database connection cannot be established. {key} is unset! Please export it")
+    logging.error(f"Database connection cannot be established. {key} is unset! Please export it")
     exit(1)
 
 
@@ -31,6 +33,8 @@ if __name__ == "__main__":
         FROM contacts;
         """)
     address_book = [(str(contact[0]), str(contact[1])) for contact in cursor.fetchall()]
+    logging.info(f"my phone number: {MY_PHONE_NUMBER}")
+    logging.info(f"my address book: {address_book}")
     dbcon.close()
     cursor.close()
 
@@ -54,7 +58,10 @@ if __name__ == "__main__":
 
     # check for intersections
     # returns an array of already registered hashes
-    resp = requests.get(f"http://{BASE_URL}/compare/", data=json.dumps(friends_combinations_array)).json()
+    compare_endpoint = f"http://{BASE_URL}/compare/"
+    resp = requests.get(compare_endpoint, data=json.dumps(friends_combinations_array)).json()
+    logging.info(f"GET {compare_endpoint}")
+    logging.info(f"PAYLOAD: \n{json.dumps(friends_combinations_array, indent=2)}")
     
     # the intersection (value for each corresponding key inside the dict) looks like:
     # ["FRIENDS_NUMBER""MY_NUMBER":"last_interaction"]
