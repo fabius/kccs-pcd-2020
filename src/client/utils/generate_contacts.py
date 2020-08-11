@@ -23,9 +23,8 @@ def unique_numbers_array(numbers=[], amount=amount_to_generate) -> list:
 def dates_array(dates=[], amount=amount_to_generate) -> list:
     now = datetime.datetime.utcnow().replace(microsecond=0, second=0)
     for i in range(int(amount)):
-        date_to_append = now + datetime.timedelta(minutes=i)
-        dates.append(date_to_append)
-        logging.debug(f"date {str(i).zfill(len(str(amount)))}: {date_to_append}")
+        dates.append(now)
+        logging.debug(f"date {str(i).zfill(len(str(amount)))}: {now}")
     return dates
 
 
