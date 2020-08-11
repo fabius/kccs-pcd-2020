@@ -1,9 +1,17 @@
-FROM ubuntu:focal
+FROM python:3.8 as base
 ENV LANG C.UTF-8
 ENV PYTHONUNBUFFERED 1
-RUN apt-get update --fix-missing
-RUN apt-get install -y python3 pipenv
+RUN pip3 install pipenv --upgrade
 WORKDIR /app
 COPY src/server/main.py src/server/Pipfile src/server/Pipfile.lock /app/
+
+# BANDIT & SECURITY CHECKS
+FROM base
+RUN pipenv install --dev
+RUN pipenv check
+# skip debug=True for flask app - this is a PoC
+RUN pipenv run bandit main.py --skip B201
+
+FROM base
 RUN pipenv install
 ENTRYPOINT pipenv run python3 main.py

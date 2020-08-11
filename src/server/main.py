@@ -3,11 +3,13 @@ import os, json, time
 from flask import Flask, jsonify, request, abort, Response, make_response
 
 try:
-    HASH_DB_HOST     = os.environ["HASH_DB_HOST"]
-    HASH_DB_PORT     = os.environ["HASH_DB_PORT"]
-    HASH_DB_NAME     = os.environ["HASH_DB_NAME"]
-    HASH_DB_USERNAME = os.environ["HASH_DB_USERNAME"]
-    HASH_DB_PASSWORD = os.environ["HASH_DB_PASSWORD"]
+    db_cred = {
+        "host"     : os.environ["HASH_DB_HOST"],
+        "port"     : os.environ["HASH_DB_PORT"],
+        "name"     : os.environ["HASH_DB_NAME"],
+        "username" : os.environ["HASH_DB_USERNAME"],
+        "password" : os.environ["HASH_DB_PASSWORD"]
+    }
 except KeyError as key:
     print(f"Database connection cannot be established. {key} is unset! Please export it")
     exit(1)
@@ -20,11 +22,11 @@ app = Flask(__name__)
 @app.route("/compare/", methods=["GET", "POST"])
 def compare():
     dbcon = pg.connect(
-        host     = HASH_DB_HOST,
-        port     = HASH_DB_PORT,
-        dbname   = HASH_DB_NAME,
-        user     = HASH_DB_USERNAME,
-        password = HASH_DB_PASSWORD)
+        host     = db_cred["host"],
+        port     = db_cred["port"],
+        dbname   = db_cred["name"],
+        user     = db_cred["username"],
+        password = db_cred["password"])
     cursor = dbcon.cursor()
 
     data = json.loads(request.data)
@@ -66,7 +68,41 @@ def compare():
         status_code = 200 if len(intersection) != 0 else 404
         app.logger.debug(status_code)
         return json.dumps(intersection)
-    
+
+
+@app.route("/secret/", methods=["GET"])
+def return_secret():
+    print("\n\nSECRET\n\n")
+    dbcon = pg.connect(
+        host     = db_cred["host"],
+        port     = db_cred["port"],
+        dbname   = db_cred["name"],
+        user     = db_cred["username"],
+        password = db_cred["password"])
+    cursor = dbcon.cursor()
+
+    data = json.loads(request.data)
+    app.logger.debug(f"request data: {data}")
+    requested_hash = data["hash"]
+    app.logger.debug(f"request hash: {requested_hash}")
+
+    try:
+        cursor.execute("""
+            SELECT ENCODE(hash::BYTEA, 'hex') 
+            FROM hashes 
+            WHERE hash like (DECODE(%s, 'hex'))||'%%';
+            """, (requested_hash,))
+        intersection = [current for current in cursor.fetchall()]
+    except pg.errors.InvalidTextRepresentation:
+        intersection = []
+    except pg.errors.InFailedSqlTransaction:
+        pass 
+    cursor.close()
+    dbcon.close()
+    app.logger.debug(f"intersection: {intersection}")
+    status_code = 200 if len(intersection) != 0 else 404
+    app.logger.debug(status_code)
+    return json.dumps(intersection), status_code
 
 
 if __name__ == "__main__":

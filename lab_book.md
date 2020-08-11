@@ -72,7 +72,7 @@ SHA1 is being used. MD5 would have been fine as well.
     ```
 
     ```bash
-    kccs-pcd-2020/src/client$ pipenv run python3 utils/generate_phone_numbers.py 1000
+    kccs-pcd-2020/src/client$ pipenv run python3 utils/generate_contacts.py 1000
     ```
 
     ```bash
@@ -98,7 +98,7 @@ SHA1 is being used. MD5 would have been fine as well.
     sys     0m0,058s
     ```
 
-    However when passing through an array of hashes rather than doing a POST request for every single hash, the time of execution is improved dramatically:
+    However when passing through an array of hashes rather than doing a POST request for every single hash ([commit](https://github.com/fabiandeifuss/kccs-pcd-2020/commit/c228c34588fa89f699fa6d0ac8580d3a7c38d052)), the time of execution is improved dramatically:
 
     result:
 
@@ -135,6 +135,6 @@ This translates to 1.5e+6 hashes per second.
 
 Assuming the desired preimage is achieved after half of the possible combinations (preimage complexity of 10e+20 without salt), it would take approximately 1.000.000 years to get the desired hash.
 
-Calculation: (6.3*10^-7 * 10^20) / (60*60*24*7*52*2)
+Calculation: (6.3\*10^-7 \* 10^20) / (60\*60\*24\*7\*52\*2)
 
 A comparable VM rental on MS Azure would cost about 2.000.000.000 $ 

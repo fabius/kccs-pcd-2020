@@ -46,7 +46,15 @@ Your local PCD server is now running and can be accessed on port 5000.
 ## Client
 
 ### Prerequisites
-Export all required environment variables
+Export all required environment variables and make sure your address book is set up and contains some sample data. 
+
+To create sample data:
+
+```bash
+cd src/client/
+pipenv install
+pipenv run python3 utils/generate_contacts.py \<amount of contacts\>
+```
 
 | Variable | Description |
 | -------: | :---------- |
@@ -95,7 +103,4 @@ docker build -t pcd-client:local -f Dockerfile.Client .
 
 
 ## TODO 
-* how can 2 parties start interacting with each other?
-* salt private information 
-
-
+* documentation

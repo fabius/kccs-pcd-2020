@@ -8,6 +8,7 @@ requests = "*"
 psycopg2-binary = "*"
 
 [dev-packages]
+bandit = "*"
 
 [requires]
 python_version = "3.8"
