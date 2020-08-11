@@ -64,7 +64,9 @@ if __name__ == "__main__":
         for hash_val in resp]
     # remove potential duplicates
     result_numbers = list(dict.fromkeys(result_numbers))
-    print(f"intersection / registered friends: {result_numbers}")
+    result_numbers = list(filter(None, result_numbers))
+    logging.info(f"intersection / registered friends: {result_numbers}")
+
 
     # register my hash combinations
     resp = requests.post(f"http://{BASE_URL}/compare/", data=json.dumps(my_combinations_array))
