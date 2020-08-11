@@ -103,6 +103,4 @@ docker build -t pcd-client:local -f Dockerfile.Client .
 
 
 ## TODO 
-* how can 2 parties start interacting with each other?
-
-
+* documentation

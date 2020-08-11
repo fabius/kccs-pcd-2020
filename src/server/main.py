@@ -68,7 +68,41 @@ def compare():
         status_code = 200 if len(intersection) != 0 else 404
         app.logger.debug(status_code)
         return json.dumps(intersection)
-    
+
+
+@app.route("/secret/", methods=["GET"])
+def return_secret():
+    print("\n\nSECRET\n\n")
+    dbcon = pg.connect(
+        host     = db_cred["host"],
+        port     = db_cred["port"],
+        dbname   = db_cred["name"],
+        user     = db_cred["username"],
+        password = db_cred["password"])
+    cursor = dbcon.cursor()
+
+    data = json.loads(request.data)
+    app.logger.debug(f"request data: {data}")
+    requested_hash = data["hash"]
+    app.logger.debug(f"request hash: {requested_hash}")
+
+    try:
+        cursor.execute("""
+            SELECT ENCODE(hash::BYTEA, 'hex') 
+            FROM hashes 
+            WHERE hash like (DECODE(%s, 'hex'))||'%%';
+            """, (requested_hash,))
+        intersection = [current for current in cursor.fetchall()]
+    except pg.errors.InvalidTextRepresentation:
+        intersection = []
+    except pg.errors.InFailedSqlTransaction:
+        pass 
+    cursor.close()
+    dbcon.close()
+    app.logger.debug(f"intersection: {intersection}")
+    status_code = 200 if len(intersection) != 0 else 404
+    app.logger.debug(status_code)
+    return json.dumps(intersection), status_code
 
 
 if __name__ == "__main__":
