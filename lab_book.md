@@ -138,3 +138,31 @@ Assuming the desired preimage is achieved after half of the possible combination
 Calculation: (6.3\*10^-7 \* 10^20) / (60\*60\*24\*7\*52\*2)
 
 A comparable VM rental on MS Azure would cost about 2.000.000.000 $ 
+
+
+
+## Q: How can we salt a last_interaction?
+Assumption: the last_interaction is a **timestamp** which is perfectly accurate and in sync on both devices.
+
+The most pragmatic way to salt a last_interaction information between two parties is by **salting it both ways**: 
+
+* my_phone_number + contact_phone_number + last_interaction
+* contact_phone_number + my_phone_number + last_interaction
+
+Why is that important though? When querying for known intersections on the database (and posting our hashes), we do not want any **false positives** just because we registered a hashed combination ourselves. By hashing two distinct combinations, we get two distinct hashes respectively which can be used to identify whether or not a contact registered himself.
+
+
+
+## Q: How can a key be exchanged so that two parties can confirm each others identity?
+Diffie Hellman is perfectly feasible in this scenario. However **WE CAN NOT** just post each parties public secret linked to their phone number. That would defeat the whole purpose of this project. Yet there is a way to get a hold of each others public secret without exposing the corresponding phone number (whether that would be in plain text or hashed).
+
+Remember we can suppress false positives by hashing our combinations in two ways. This way it is possible to just append the public secret to those hashes known by both parties.
+
+So we end up having two hashes for each perspective:
+
+* hashed_combination <- this one is known by both parties and can be identified
+* hashed_combination + public secret <- this one is foreign, but we know the hashed_combination. 
+
+To access the secret we can scan the database for values that are known to us and figure out if there are any hashes that start with that specific hexadecimal number. The ending bits represent the public secret!
+
+Diffie Hellman key exchange is now possible.
