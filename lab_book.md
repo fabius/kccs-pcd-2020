@@ -135,7 +135,7 @@ This translates to 1.5e+6 hashes per second.
 
 Assuming the desired preimage is achieved after half of the possible combinations (preimage complexity of 10e+20 without salt), it would take approximately 1.000.000 years to get the desired hash.
 
-Calculation: (6.3\*10^-7 \* 10^20) / (60\*60\*24\*7\*52\*2)
+Calculation: (6.3e-7 \* 1e+20) / (60\*60\*24\*7\*52\*2)
 
 A comparable VM rental on MS Azure would cost about 2.000.000.000 $ 
 
@@ -160,8 +160,10 @@ Remember we can suppress false positives by hashing our combinations in two ways
 
 So we end up having two hashes for each perspective:
 
-* hashed_combination <- this one is known by both parties and can be identified
-* hashed_combination + public secret <- this one is foreign, but we know the hashed_combination. 
+* hashed_combination
+  * this one is known by both parties and can be identified
+* hashed_combination + public secret
+  * this one is foreign, but we know the hashed_combination. 
 
 To access the secret we can scan the database for values that are known to us and figure out if there are any hashes that start with that specific hexadecimal number. The ending bits represent the public secret!
 
