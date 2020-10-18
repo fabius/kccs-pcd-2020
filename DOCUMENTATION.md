@@ -1,4 +1,22 @@
-# Private Contact Discovery: An exemplary implementation for both client and server
+# Private Contact Discovery: An exemplary implementation
+
+
+## Abstract
+This project is about a matching service available to users providing a way to 
+get to know which of an individual's contacts is registered on an online 
+service such as a messaging platform without invading an individual's privacy. 
+Due to the increased convenience and ease of implementation provided by privacy 
+invading matching services, privacy tends to be an afterthought. However, 
+privacy and convenience do not have to be mutually exclusive. 
+The main issue to solve is about enabling private set intersection. 
+Current solutions are centralised and do not provide a way of private set 
+intersections. The methodology introduced in this project is based on research 
+done by C. Ihle et al.¹ and transferred to accommodate the needs of a 
+messaging service. This methodology results in a significant increase of 
+computing resources necessary to gather user information in case of a data 
+breach.
+
+
 
 # (1) Overview
 
@@ -8,10 +26,9 @@ This project is based on two assumptions:
 1) Social services are ubiquitous and are not going anywhere anytime soon
 2) Privacy is important and shall not be about austerity and trust but a technical requirement
 
-"(...) when someone shares a photo with their friends, their intent is to share it with their friends. Not the service operator, ad networks, hackers, or governments."
-[https://signal.org/blog/private-contact-discovery/]
+"(...) when someone shares a photo with their friends, their intent is to share it with their friends. Not the service operator, ad networks, hackers, or governments." ²
 
-Equally when you want to know whether a contact of yours is onlineregisteredetc. you do not intent to share neither hisher nor your own privately disclosed information to anyone but you and your desired contact. Yet social services need some kind of matching service to get a client the information heshe desires. Implementing a contact discovery service itself is rather straightforward. Doing that while respecting privacy less so.
+Equally when you want to know whether a contact of yours is registered online you do not intent to share neither his/her nor your own privately disclosed information to anyone but you and your desired contact. Yet social services need some kind of matching service to get a client the information he/she desires. Implementing a contact discovery service itself is rather straightforward. Doing that while respecting privacy less so.
 
 ### What is private contact discovery and why is it important?
 In essence private contact discovery describes a matching service allowing clients to find out whether or not a contact is registered on a given service without ever getting any information about any registered client.
@@ -19,7 +36,10 @@ In essence private contact discovery describes a matching service allowing clien
 The most prevalent privacy respecting solution for a contact discovery service as of right now is implemented by Signal for their messenger.
 
 ### Signal messenger
-Signal took a first step in the right direction. In contrast to other messengers which are, (for monetary reasons among others) not looking deep into privacy respecting solutions, Signal makes each client device hash its phone number locally on the edge before uploading that hash to their servers. However even though this is better than uploading and storing everything in plain text, a typical phone number consists of about 10 digits. Hence these hashes are vulnerable to brute-force/dictionary attacks.
+Signal took a first step in the right direction. 
+Signal makes each client device hash its phone number locally on the edge **before uploading** that hash to their servers. 
+This is in stark contrast to other messengers which are not looking deep into privacy respecting solutions. This is due to monetary reasons among others.
+However, even though this is better than uploading and storing everything in plain text, a typical phone number only consists of about 10 digits. Hence these hashes are vulnerable to brute-force/dictionary attacks.
 
 Signal is aware of this issue and therefore falls back on a hardware solution. In this case Intel's trusted execution environment (SGX) is being used. This however only moves the trust issue to another level/party and does not solve it for good.
 
@@ -28,7 +48,7 @@ Research question: Can we find a way to increase our pre-image complexity up to 
 
 In other words - two criteria have to be matched:
 
-* do NOT rely on hardware solutions
+* do **not** rely on **proprietary** hardware solutions
 * provide a possibility of private set intersection
 
 ## Implementation and architecture
@@ -41,7 +61,8 @@ This way the server only ever sees the hashes and does not gather any informatio
 * of a relation between a target and another individual and
 * that individual's phone number.
 
-To address this issue a privately disclosed information only known to both contacts that want to interact with another, such as a date of last interaction, is salted onto the combination before being hashed.
+To address this issue a salt is introduced. 
+The salt consists of privately disclosed information only known to both contacts that want to interact with each other, such as a date of last interaction.
 
 ![1](media/2.JPG)
 
@@ -96,7 +117,7 @@ This approach for improving privacy when discovering contacts accomplishes both 
 
 Assuming there is a privately disclosed secret known by both parties, this approach provides a methodology to discover your contacts privately.
 
-This approach is not impenetrable though. Given infinite amount of computing resources any hash can be matched to its input value or collision thereof. The workload to compute hashes is horizontally scalable. Thus the critical data needed to evaluate the feasibility of computing a specific dictionary in question is the price to pay for the computing resources necessary:
+This approach is not impenetrable though. Given infinite amount of computing resources any hash can be matched to its input value or collision thereof. The workload to compute hashes is horizontally scalable. Thus, the critical data needed to evaluate the feasibility of computing a specific dictionary in question is the price to pay for the computing resources necessary:
 
 On a modern computer (6core, 2.8GHz), it takes 0.00063 milliseconds (6.3e-7 seconds) to compute a SHA1 hash. This translates to 1.5e+6 hashes per second. Assuming the desired pre-image is computed after half of the possible combinations (pre-image complexity of 1e+20 without salt), it would take approximately 1 million years of computing to get the desired hash. A comparable VM rental on Azure is about 2 billion USD.
 
@@ -113,10 +134,15 @@ Using this methodology, the upfront cost of resources necessary to compute a spe
 
 ## Closing thoughts
 
-Whether or not the upfront cost of computation this approach introduces causes the compuation of a desired hash to be infeasible is up for discussion.
+Whether or not the upfront cost of computation this approach introduces causes the computation of a desired hash to be infeasible is up for discussion.
 
 This approach still stores all hashes in a centralised database. Optimally the storage shall be decentralised.
 
-Additionally this project's scope did not include any implementation on current smartphone operating systems. To push this approach into production a privately disclosed secret between two contacts has to be evaluated in more detail.
+Additionally, this project's scope did not include any implementation on current smartphone operating systems. To push this approach into production a privately disclosed secret between two contacts has to be evaluated in more detail.
 
 What kind of secret is available to all contacts? Does the smartphone's operating system provide an API to get this very information?
+
+
+## References
+1. [A First Step Towards Content Protecting Plagiarism Detection](https://www.youtube.com/watch?v=A12BeQ4HODE)
+2. [Signal Quote](https://signal.org/blog/private-contact-discovery/)
