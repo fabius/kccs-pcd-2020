@@ -2,19 +2,20 @@
 
 
 ## Abstract
-This project is about a matching service available to users providing a way to 
-get to know which of an individual's contacts is registered on an online 
-service such as a messaging platform without invading an individual's privacy. 
+This project is about a matching service that allows users to find out which of 
+their contacts are registered in an online service such as a messaging platform 
+without violating an individual's privacy. 
 Due to the increased convenience and ease of implementation provided by privacy 
 invading matching services, privacy tends to be an afterthought. However, 
 privacy and convenience do not have to be mutually exclusive. 
-The main issue to solve is about enabling private set intersection. 
+The main issue to solve is about enabling private set intersection 
+[@yanai_private_2020]. 
 Current solutions are centralised and do not provide a way of private set 
 intersections. The methodology introduced in this project is based on research 
-done by C. Ihle et al.¹ and transferred to accommodate the needs of a 
-messaging service. This methodology results in a significant increase of 
-computing resources necessary to gather user information in case of a data 
-breach.
+done by C. Ihle et al. [@ihle_first_2020] and transferred to accommodate the 
+needs of a messaging service. This methodology results in a significant 
+increase of computing resources necessary to gather user information in case 
+of a data breach.
 
 
 
@@ -29,7 +30,7 @@ technical requirement
 
 "(...) when someone shares a photo with their friends, their intent is to share 
 it with their friends. Not the service operator, ad networks, hackers, or 
-governments." ²
+governments." [@marlinspike_technology_2017]
 
 Equally when you want to know whether a contact of yours is registered online 
 you do not intent to share neither his/her nor your own privately disclosed 
@@ -48,17 +49,18 @@ as of right now is implemented by Signal for their messenger.
 
 ### Signal messenger
 Signal took a first step in the right direction. Signal makes each client 
-device hash its phone number locally on the edge **before uploading** that 
-hash to their servers. This is in stark contrast to other messengers which are 
-not looking deep into privacy respecting solutions. This is due to monetary 
-reasons among others. However, even though this is better than uploading and 
-storing everything in plain text, a typical phone number only consists of about 
-10 digits. Hence these hashes are vulnerable to brute-force/dictionary attacks.
+device hash its phone number locally on the edge **before uploading** 
+[@marlinspike_technology_2017] that hash to their servers. This is in stark 
+contrast to other messengers which are not looking deep into privacy respecting 
+solutions. This is due to monetary reasons among others. However, even though 
+this is better than uploading and storing everything in plain text, a typical 
+phone number only consists of about 10 digits. Hence these hashes are 
+vulnerable to brute-force/dictionary attacks [@bosnjak_brute-force_2018].
 
 Signal is aware of this issue and therefore falls back on a hardware solution. 
-In this case Intel's trusted execution environment (SGX) is being used. This 
-however only moves the trust issue to another level/party and does not solve it 
-for good.
+In this case Intel's trusted execution environment (SGX) 
+[@marlinspike_technology_2017] is being used. This however only moves the trust 
+issue to another level/party and does not solve it for good.
 
 ## Improvement approach
 Research question: Can we find a way to increase our pre-image complexity up to 
@@ -72,9 +74,9 @@ In other words - two criteria have to be matched:
 
 ## Implementation and architecture
 To increase the pre-image complexity not only a singular phone number is hashed 
-and uploaded but combinations of phone numbers. For every contact available in 
-a given address book a combination of both the owner's and a contact's phone 
-number is hashed.
+and uploaded but combinations [@ihle_first_2020] of phone numbers. 
+For every contact available in a given address book a combination of both the 
+owner's and a contact's phone number is hashed.
 
 ![1](media/1.PNG)
 
@@ -127,11 +129,12 @@ database backend. A REST API shall serve an interface to
 
 ### Key exchange
 Once a client knows about already registered contacts a Diffie-Hellman key 
-exchange takes place. The public keys can be extracted from our PostgreSQL 
-database. However WE CAN NOT just post each parties public secret linked to 
-their phone number. That would defeat the whole purpose of this project. Yet 
-there is a way to get a hold of each others public secret without exposing the 
-corresponding phone number (whether that would be in plain text or hashed).
+exchange [@nan_li_research_2010] takes place. The public keys can be extracted 
+from our PostgreSQL database. However WE CAN NOT just post each parties public 
+secret linked to their phone number. That would defeat the whole purpose of 
+this project. Yet there is a way to get a hold of each others public secret 
+without exposing the corresponding phone number (whether that would be in plain 
+text or hashed).
 
 As mentioned earlier we can suppress false positives by hashing our 
 combinations in two ways. This way it is possible to append the public secret 
@@ -213,5 +216,3 @@ operating system provide an API to get this very information?
 
 
 ## References
-1. [A First Step Towards Content Protecting Plagiarism Detection](https://www.youtube.com/watch?v=A12BeQ4HODE)
-2. [Signal Quote](https://signal.org/blog/private-contact-discovery/)
