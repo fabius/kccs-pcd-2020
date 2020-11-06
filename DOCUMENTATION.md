@@ -78,7 +78,7 @@ and uploaded but combinations [@ihle_first_2020] of phone numbers.
 For every contact available in a given address book a combination of both the 
 owner's and a contact's phone number is hashed.
 
-![1](media/1.PNG)
+![](media/1.PNG)
 
 This way the server only ever sees the hashes and does not gather any 
 information about registered clients. Even though the pre-image complexity is 
@@ -91,7 +91,7 @@ To address this issue a salt is introduced. The salt consists of privately
 disclosed information only known to both contacts that want to interact with 
 each other, such as a date of last interaction.
 
-![1](media/2.JPG)
+![](media/2.JPG)
 
 Note that the order of contacts is important due to the deterministic nature of 
 hashing algorithms.
@@ -106,12 +106,12 @@ The hashing algorithm of choice shall provide a nice balance between
 complexity, speed and the disk space required. Assuming 2 billion users having 
 an average of 200 contacts in their address book, SHA1 is a reasonable pick.
 
-|Hashing algorithm|Speed|Complexity|Disk space required|
+|Hashing algorithm|Time to hash 1.000.000 20-digit numbers|Digest sizes|Disk space required for 4e+11 hashes|
 |-|-|-|-|
-|SHA1||||
-|SHA256||||
-|SHA512||||
-|MD5||||
+|SHA1|650ms|$2^{160}$|60 TB|
+|SHA256|830ms|$2^{256}$|88 TB|
+|SHA512|1.1s|$2^{512}$|136 TB|
+|MD5|650ms|$2^{128}$|60 TB|
 
 Due to the deterministic nature of hashing algorithms, it is pointless to brute 
 force hash collisions as an attacker would not gain any information about the 
@@ -125,7 +125,7 @@ database backend. A REST API shall serve an interface to
 * GET an intersection of already registered friends
 * POST your registration
 
-![1](media/3.JPG)
+![](media/3.JPG)
 
 ### Key exchange
 Once a client knows about already registered contacts a Diffie-Hellman key 
@@ -147,7 +147,7 @@ We end up having two hashes for each perspective:
 * hashed_combination + public secret
   * this one is foreign, but we know the hashed_combination.
 
-![1](media/4.JPG)
+![](media/4.JPG)
 
 To access the secret we can scan the database for values that are known to us 
 and figure out if there are any hashes that start with that specific 
@@ -186,11 +186,10 @@ A comparable VM rental on Azure is about 2 billion USD.
 
 |Complexity of pre-image|Estimated time required to compute a desired hash on modern hardware (single machine)|Estimated cost of computation
 |-|-|-|
-|1e+10|||
-|1e+15|||
-|1e+20|1e+6 years|2 billion USD|
-|1e+25|||
-|1e+30|||
+|1e+10|1 hour|essentially free|
+|1e+15|10 years|10.000 USD|
+|1e+20|1e+6 years|1 billion USD|
+|1e+25|1e+11 years|1e+14 USD|
 
 Using this methodology, the upfront cost of resources necessary to compute a 
 specific dictionary in question is significantly higher. Assuming that, under 
