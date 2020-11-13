@@ -173,8 +173,9 @@ per second. Assuming the desired pre-image is computed after half of the
 possible combinations (pre-image complexity of 1e+20 without salt), it would 
 take approximately 1 million years of computing to get the desired hash. 
 A comparable VM rental on Azure is about 2 billion USD.
+Table 2 shows the estimated time required to compute a desired hash on modern hardware (single machine) and estimated costs.
 
-|Complexity of pre-image|Estimated time required to compute a desired hash on modern hardware (single machine)|Estimated cost of computation
+|Complexity of pre-image|Estimated time|Estimated cost of computation
 |-|-|-|
 |1e+10|1 hour|essentially free|
 |1e+15|10 years|10.000 USD|
