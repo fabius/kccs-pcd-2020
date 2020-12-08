@@ -7,6 +7,8 @@ from typing import List
 
 
 class Procd:
+    """Privacy respecting contact discovery"""
+
     SHARED_PRIME = 23
     SHARED_BASE = 5
 
@@ -22,6 +24,14 @@ class Procd:
                  address_book_with_interactions: List[tuple],
                  procd_server: str,
                  private_client_secret: int):
+        """
+        Args:
+            phone_number (str): the caller's own phone number
+            address_book_with_interactions (list): a list of tuples
+                containing (contact_number, last_interaction_date)
+            procd_server (str): IP_address:port of your desired procd server instance
+            private_client_secret (int): the caller's private diffie hellman secret
+        """
         print("Instanciating Procd...")
         self.phone_number = phone_number
         self.address_book = address_book_with_interactions
@@ -29,6 +39,17 @@ class Procd:
         self._private_client_secret = int(private_client_secret)
 
     def run(self):
+        """
+        Post all computed combinations of:
+            - the caller's own phone number,
+            - a contact's phone number,
+            - the corresponding date of last interaction
+            to your desired procd server instance.
+
+        Returns:
+            list: a list of all registered contacts;
+                an empty list if none were found
+        """
         # construct 2 dictionaries of number combinations:
         # NOTE THAT LAST_INTERACTION IS JUST AN EXAMPLE OF ANY PRIVATELY DISCLOSED INFORMATION
         # 1 - MY_NUMBER followed by A_FRIENDS_NUMBER : "last_interaction"
