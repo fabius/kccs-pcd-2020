@@ -1,5 +1,5 @@
 import psycopg2 as pg
-import os, json, time
+import os, json, time, traceback
 from flask import Flask, jsonify, request, abort, Response, make_response
 
 try:
@@ -37,18 +37,29 @@ def compare():
             return "provide an array of hashes"
         else:
             try:
-                cursor.execute("""
-                    INSERT INTO hashes (hash)
-                    VALUES (DECODE(UNNEST(%s), 'hex'))
-                    ON CONFLICT (hash)
-                    DO UPDATE SET hash = EXCLUDED.hash;
-                    """, (data,))
+                raw = data
+                combination = [r[:40] for r in raw]
+                secret = [r[40:] for r in raw]
+                print(f"raw: {raw}")
+                print(f"len(raw): {len(raw[0])}")
+                print(f"combination: {combination}")
+                print(f"secret: {secret}")
+                for entry in data:
+                    combination = entry[:40]
+                    secret = entry[40:]
+                    cursor.execute("""
+                        INSERT INTO hashes (hash, secret)
+                        VALUES (DECODE(%s, 'hex'), DECODE(%s, 'hex'))
+                        ON CONFLICT (hash)
+                        DO UPDATE SET hash = EXCLUDED.hash;
+                        """, (combination, secret))
             except pg.errors.UniqueViolation:
-                app.logger.debug(f"Hash {data} already exists")
+                app.logger.debug("Hash already exists")
+                traceback.print_exc()
             dbcon.commit()
             dbcon.close()
             cursor.close()
-            return json.dumps(data) 
+            return "OK" 
 
     elif request.method == "GET":
         try:
@@ -72,7 +83,7 @@ def compare():
 
 @app.route("/secret/", methods=["GET"])
 def return_secret():
-    print("\n\nSECRET\n\n")
+    app.logger.debug("\n\nSECRET\n\n")
     dbcon = pg.connect(
         host     = db_cred["host"],
         port     = db_cred["port"],
@@ -88,18 +99,18 @@ def return_secret():
 
     try:
         cursor.execute("""
-            SELECT ENCODE(hash::BYTEA, 'hex') 
-            FROM hashes 
-            WHERE hash like (DECODE(%s, 'hex'))||'%%';
+select encode(hash::bytea,'hex'),encode(secret::bytea,'hex') from hashes;
             """, (requested_hash,))
-        intersection = [current for current in cursor.fetchall()]
+        all_data = [current for current in cursor.fetchall()]
+        app.logger.debug(f"all_data: {all_data}")
+        intersection = [x[1] for x in all_data if x[0]==requested_hash]
     except pg.errors.InvalidTextRepresentation:
         intersection = []
     except pg.errors.InFailedSqlTransaction:
-        pass 
+        intersection = [] 
     cursor.close()
     dbcon.close()
-    app.logger.debug(f"intersection: {intersection}")
+    app.logger.debug(f"secrets to send back: {intersection}")
     status_code = 200 if len(intersection) != 0 else 404
     app.logger.debug(status_code)
     return json.dumps(intersection), status_code

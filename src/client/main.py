@@ -121,12 +121,11 @@ if __name__ == "__main__":
     # addd their secret to each number
     numbers_and_secrets = []
     for number in result_numbers:
-        resp_hash = requests.get(f"http://{BASE_URL}/secret/",
+        print(f"sending hash: {dh_dict[number]}")
+        resp_secret= requests.get(f"http://{BASE_URL}/secret/",
                                  data=json.dumps({"hash": dh_dict[number]})).json()
-        secret = str()
-        for hashed in resp_hash:
-            temp = hashed[0][40:]
-            secret = temp if len(temp) != 0 else secret
+        print(f"response secret: {resp_secret}")
+        secret = resp_secret[0]
         numbers_and_secrets.append((number, secret))
     logging.info(f"numbers and secrets: {numbers_and_secrets}")
     try:
@@ -140,5 +139,7 @@ if __name__ == "__main__":
     # register my hash combinations: list
     # 1) my hashed combinations: list
     # 2) hash + secret: list
-    resp = requests.post(
-        f"http://{BASE_URL}/compare/", data=json.dumps(array_to_post))
+    print(my_combinations_array)
+    print(secrets_to_send)
+    print(array_to_post)
+    r_comp = requests.post(f"http://{BASE_URL}/compare/", data=json.dumps(secrets_to_send))
