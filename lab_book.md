@@ -18,12 +18,12 @@ SHA1 is being used. MD5 would have been fine as well.
 
     So we are going to store an approximate amount of 2.000.000.000 * 200 = **400.000.000.000 hashes**.
 
-2. How much disk space is taken up by 1.000.000 hashes?
+2. How much disk space is taken up by 100.000 hashes?
 
-    I created a fictitious address book (["contacts" table](db_structure.sql)) containing 1.000.000 contacts using the [generate_phone_numbers.py utility](src/client/utils/generate_phone_numbers.py). 
+    I created a fictitious address book (["contacts" table](db_structure.sql)) containing 100.000 contacts using the [generate_phone_numbers.py utility](src/client/utils/generate_phone_numbers.py). 
 
     ```bash
-    kccs-pcd-2020/src/client$ pipenv run python3 utils/generate_phone_numbers.py 1000000
+    kccs-pcd-2020/src/client$ pipenv run python3 utils/generate_phone_numbers.py 100000
     ```
 
     To generate the corresponding hashes I ran the client image:
@@ -41,19 +41,19 @@ SHA1 is being used. MD5 would have been fine as well.
         fabiandeifuss/pcd-client:latest
     ```
 
-    The amount of disk space taken up by those 1.000.000 hashes can be figured out using a PostgreSQL query:
+    The amount of disk space taken up by those 100.000 hashes can be figured out using a PostgreSQL query:
     
     ```sql
     postgres=# SELECT PG_SIZE_PRETTY(PG_TOTAL_RELATION_SIZE('hashes')) AS size_of_hash_table;
     size_of_hash_table 
     --------------------
-    127 MB
+    15 MB
     (1 row)
     ```
 
 3. How much disk space is required to store 400.000.000.000 hashes?
 
-    Approximately 400.000 * 127 MB = **50.8 TB**
+    Approximately 4.000.000 * 15 MB = **60 TB**
     
 
 
@@ -121,7 +121,7 @@ SHA1 is being used. MD5 would have been fine as well.
 
     real    0m0,908s
     user    0m0,811s
-    sys     0m0,074s    
+    sys     0m0,074s
     ```
 
 
