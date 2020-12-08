@@ -31,7 +31,7 @@ try:
     SHARED_BASE = 5  # g
     my_secret = int(os.environ["DH_SECRET"])  # a
 except KeyError as key:
-    lgging.error(
+    logging.error(
         f"Diffie Hellman requires a private secret. {key} is unset! Please export it")
     exit(1)
 
