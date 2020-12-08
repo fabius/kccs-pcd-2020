@@ -87,7 +87,8 @@ if __name__ == "__main__":
     friends_combinations_array = [
         hash_val for hash_val in friends_combinations_dict]
     sec = format((SHARED_BASE**my_secret) % SHARED_PRIME, 'x')
-    sec = f"{0*(len(sec)%2)}{sec}"  # even number of digits
+    print(f"len(sec) = {len(sec)}")
+    sec = f"0{sec}" if len(sec)%2 else sec # even number of digits (postgres needs that)
     logging.info(f"secret: {sec}")
     logging.info(f"type:   {type(sec)}")
     secrets_to_send = [hash_val + sec for hash_val in my_combinations_array]
