@@ -1,3 +1,5 @@
+# configuration for the postgresql database
+# the pcd server shall access
 hash_db:
   host: "192.168.178.48"
   port: 5432

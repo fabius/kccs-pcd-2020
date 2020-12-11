@@ -1,7 +1,16 @@
+# configuration for the exemplary pcd client
+
+# ip address + port your pcd server is accessible on
 procd_ip: "192.168.178.48:5000"
+
+# diffie hellman client secret you'd like to use
 dh_secret: "8"
+
+# the client's phone number
 my_phone_number: "1863386318"
 
+# the client's address book
+# adjust to your liking
 contacts:
   - number: 9876543219
     last_interaction: "2020-12-24T12:34+00:00"
