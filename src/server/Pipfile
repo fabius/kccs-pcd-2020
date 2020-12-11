@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 psycopg2-binary = "*"
 flask = "*"
+pyyaml = "*"
 
 [dev-packages]
 bandit = "*"

@@ -1,32 +1,30 @@
-import psycopg2 as pg
-import os, json, time, traceback
-from flask import Flask, jsonify, request, abort, Response, make_response
+"""private robust contact discovery server"""
 
-try:
-    db_cred = {
-        "host"     : os.environ["HASH_DB_HOST"],
-        "port"     : os.environ["HASH_DB_PORT"],
-        "name"     : os.environ["HASH_DB_NAME"],
-        "username" : os.environ["HASH_DB_USERNAME"],
-        "password" : os.environ["HASH_DB_PASSWORD"]
-    }
-except KeyError as key:
-    print(f"Database connection cannot be established. {key} is unset! Please export it")
-    exit(1)
+import json
+import traceback
+import psycopg2 as pg
+from flask import Flask, request
+import yaml
+
+with open("config.yaml", 'r') as f:
+    raw_yaml = yaml.safe_load(f)
+    db_cred = raw_yaml["hash_db"]
 
 app = Flask(__name__)
 
 # provide 2 endpoints:
 # 1 - check for intersections and return them
 # 2 - register combinations
+
+
 @app.route("/compare/", methods=["GET", "POST"])
 def compare():
     dbcon = pg.connect(
-        host     = db_cred["host"],
-        port     = db_cred["port"],
-        dbname   = db_cred["name"],
-        user     = db_cred["username"],
-        password = db_cred["password"])
+        host=db_cred["host"],
+        port=db_cred["port"],
+        dbname=db_cred["dbname"],
+        user=db_cred["username"],
+        password=db_cred["password"])
     cursor = dbcon.cursor()
 
     data = json.loads(request.data)
@@ -59,7 +57,7 @@ def compare():
             dbcon.commit()
             dbcon.close()
             cursor.close()
-            return "OK" 
+            return "OK"
 
     elif request.method == "GET":
         try:
@@ -72,7 +70,7 @@ def compare():
         except pg.errors.InvalidTextRepresentation:
             intersection = []
         except pg.errors.InFailedSqlTransaction:
-            pass 
+            pass
         cursor.close()
         dbcon.close()
         app.logger.debug(f"intersection: {intersection}")
@@ -85,11 +83,11 @@ def compare():
 def return_secret():
     app.logger.debug("\n\nSECRET\n\n")
     dbcon = pg.connect(
-        host     = db_cred["host"],
-        port     = db_cred["port"],
-        dbname   = db_cred["name"],
-        user     = db_cred["username"],
-        password = db_cred["password"])
+        host=db_cred["host"],
+        port=db_cred["port"],
+        dbname=db_cred["name"],
+        user=db_cred["username"],
+        password=db_cred["password"])
     cursor = dbcon.cursor()
 
     data = json.loads(request.data)
@@ -101,13 +99,13 @@ def return_secret():
         cursor.execute("""
 select encode(hash::bytea,'hex'),encode(secret::bytea,'hex') from hashes;
             """, (requested_hash,))
-        all_data = [current for current in cursor.fetchall()]
+        all_data = cursor.fetchall()
         app.logger.debug(f"all_data: {all_data}")
-        intersection = [x[1] for x in all_data if x[0]==requested_hash]
+        intersection = [x[1] for x in all_data if x[0] == requested_hash]
     except pg.errors.InvalidTextRepresentation:
         intersection = []
     except pg.errors.InFailedSqlTransaction:
-        intersection = [] 
+        intersection = []
     cursor.close()
     dbcon.close()
     app.logger.debug(f"secrets to send back: {intersection}")
@@ -118,4 +116,3 @@ select encode(hash::bytea,'hex'),encode(secret::bytea,'hex') from hashes;
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
-    

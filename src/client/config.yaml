@@ -1,0 +1,11 @@
+procd_ip: "192.168.178.48:5000"
+dh_secret: "8"
+my_phone_number: "1863386318"
+
+contacts:
+  - number: 9876543219
+    last_interaction: "2020-12-24T12:34+00:00"
+  - number: 3498572948
+    last_interaction: "2020-12-24T12:34+00:00"
+  - number: 1234567891
+    last_interaction: "2020-12-24T12:34+00:00"
