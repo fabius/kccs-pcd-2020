@@ -1,7 +1,7 @@
 # configuration for the exemplary pcd client
 
 # ip address + port your pcd server is accessible on
-procd_ip: "192.168.178.48:5000"
+procd_ip: "0.0.0.0:5000"
 
 # diffie hellman client secret you'd like to use
 dh_secret: "8"

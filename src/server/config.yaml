@@ -1,8 +1,8 @@
 # configuration for the postgresql database
 # the pcd server shall access
 hash_db:
-  host: "192.168.178.48"
+  host: "0.0.0.0"
   port: 5432
-  dbname: "pcd"
-  username: "procd"
-  password: "procdPass"
+  dbname: "postgres"
+  username: "postgres"
+  password: "postgres"
