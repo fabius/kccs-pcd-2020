@@ -1,4 +1,4 @@
-# KCCS - Private Contact Discovery
+# procd - Private Robust Contact Discovery
 
 This project is an exemplary implementation for a privacy preserving contact discovery service.
 
