@@ -85,7 +85,7 @@ def return_secret():
     app.logger.debug("\n\nSECRET\n\n")
     dbcon = pg.connect(host=db_cred["host"],
                        port=db_cred["port"],
-                       dbname=db_cred["name"],
+                       dbname=db_cred["dbname"],
                        user=db_cred["username"],
                        password=db_cred["password"])
     cursor = dbcon.cursor()
