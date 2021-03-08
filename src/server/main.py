@@ -19,12 +19,11 @@ app = Flask(__name__)
 
 @app.route("/compare/", methods=["GET", "POST"])
 def compare():
-    dbcon = pg.connect(
-        host=db_cred["host"],
-        port=db_cred["port"],
-        dbname=db_cred["dbname"],
-        user=db_cred["username"],
-        password=db_cred["password"])
+    dbcon = pg.connect(host=db_cred["host"],
+                       port=db_cred["port"],
+                       dbname=db_cred["dbname"],
+                       user=db_cred["username"],
+                       password=db_cred["password"])
     cursor = dbcon.cursor()
 
     data = json.loads(request.data)
@@ -45,7 +44,8 @@ def compare():
                 for entry in data:
                     combination = entry[:40]
                     secret = entry[40:]
-                    cursor.execute("""
+                    cursor.execute(
+                        """
                         INSERT INTO hashes (hash, secret)
                         VALUES (DECODE(%s, 'hex'), DECODE(%s, 'hex'))
                         ON CONFLICT (hash)
@@ -61,11 +61,12 @@ def compare():
 
     elif request.method == "GET":
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT ENCODE(hash::BYTEA, 'hex') 
                 FROM hashes 
                 WHERE ENCODE(hash::BYTEA, 'hex') = ANY(%s);
-                """, (data,))
+                """, (data, ))
             intersection = [current[0] for current in cursor.fetchall()]
         except pg.errors.InvalidTextRepresentation:
             intersection = []
@@ -82,12 +83,11 @@ def compare():
 @app.route("/secret/", methods=["GET"])
 def return_secret():
     app.logger.debug("\n\nSECRET\n\n")
-    dbcon = pg.connect(
-        host=db_cred["host"],
-        port=db_cred["port"],
-        dbname=db_cred["name"],
-        user=db_cred["username"],
-        password=db_cred["password"])
+    dbcon = pg.connect(host=db_cred["host"],
+                       port=db_cred["port"],
+                       dbname=db_cred["name"],
+                       user=db_cred["username"],
+                       password=db_cred["password"])
     cursor = dbcon.cursor()
 
     data = json.loads(request.data)
@@ -96,9 +96,10 @@ def return_secret():
     app.logger.debug(f"request hash: {requested_hash}")
 
     try:
-        cursor.execute("""
+        cursor.execute(
+            """
 select encode(hash::bytea,'hex'),encode(secret::bytea,'hex') from hashes;
-            """, (requested_hash,))
+            """, (requested_hash, ))
         all_data = cursor.fetchall()
         app.logger.debug(f"all_data: {all_data}")
         intersection = [x[1] for x in all_data if x[0] == requested_hash]

@@ -2,7 +2,10 @@ import time, hashlib, statistics
 
 print("generating list")
 # strings with 20 digits
-my_strings = [str(i) for i in range(10000000000000000000, 10000000000001000000)]
+my_strings = [
+    str(i) for i in range(10000000000000000000, 10000000000001000000)
+]
+
 
 def measure_time(strings: list) -> float:
     print("measuring")
